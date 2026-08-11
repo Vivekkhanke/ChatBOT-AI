@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Banking AI Assistant
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <h1>
+            🏦 Banking AI Assistant
+        </h1>
+
+        <p>
+            Gemini + Oracle + Banking Policy RAG
+        </p>
+
+    </div>
+
+
+    <div
+        id="chat"
+        class="chat"
+    ></div>
+
+
+    <div class="examples">
+
+        <button
+            onclick="useExample('My account details please')"
+        >
+            Account Details
+        </button>
+
+        <button
+            onclick="useExample('What is my savings balance?')"
+        >
+            Savings Balance
+        </button>
+
+        <button
+            onclick="useExample('What is my credit score?')"
+        >
+            Credit Score
+        </button>
+
+        <button
+            onclick="useExample('What is the bank deposit policy?')"
+        >
+            Deposit Policy
+        </button>
+
+        <button
+            onclick="useExample('What does the credit card policy say?')"
+        >
+            Credit Card Policy
+        </button>
+
+    </div>
+
+
+    <form id="chatForm">
+
+        <input
+            id="message"
+            type="text"
+            placeholder="Ask your banking question..."
+            autocomplete="off"
+            required
+        >
+
+        <button
+            type="submit"
+        >
+            Send
+        </button>
+
+    </form>
+
+
+    <div
+        id="status"
+        class="status"
+    ></div>
+
+</div>
+
+
+<script
+    src="{{ url_for('static', filename='app.js') }}"
+></script>
+
+</body>
+
+</html>

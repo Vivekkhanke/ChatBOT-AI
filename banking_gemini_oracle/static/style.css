@@ -1,0 +1,224 @@
+* {
+    box-sizing: border-box;
+}
+
+
+body {
+
+    margin: 0;
+
+    font-family:
+        Arial,
+        sans-serif;
+
+    background:
+        #f4f6f8;
+
+    color:
+        #17202a;
+}
+
+
+.container {
+
+    width:
+        min(950px, 94%);
+
+    margin:
+        30px auto;
+}
+
+
+.header {
+
+    background:
+        white;
+
+    padding:
+        24px;
+
+    border-radius:
+        14px;
+
+    margin-bottom:
+        15px;
+
+    box-shadow:
+        0 2px 10px
+        rgba(0, 0, 0, 0.06);
+}
+
+
+.header h1 {
+
+    margin:
+        0 0 8px;
+}
+
+
+.header p {
+
+    margin:
+        0;
+
+    color:
+        #667085;
+}
+
+
+.chat {
+
+    background:
+        white;
+
+    min-height:
+        480px;
+
+    padding:
+        20px;
+
+    border-radius:
+        14px;
+
+    box-shadow:
+        0 2px 10px
+        rgba(0, 0, 0, 0.06);
+
+    overflow-y:
+        auto;
+}
+
+
+.message {
+
+    padding:
+        12px 15px;
+
+    margin:
+        10px 0;
+
+    border-radius:
+        12px;
+
+    max-width:
+        82%;
+
+    white-space:
+        pre-wrap;
+}
+
+
+.message.user {
+
+    margin-left:
+        auto;
+
+    background:
+        #e8f0fe;
+}
+
+
+.message.bot {
+
+    background:
+        #f1f3f5;
+}
+
+
+.examples {
+
+    display:
+        flex;
+
+    flex-wrap:
+        wrap;
+
+    gap:
+        8px;
+
+    margin:
+        12px 0;
+}
+
+
+.examples button {
+
+    border:
+        1px solid #d0d5dd;
+
+    background:
+        white;
+
+    padding:
+        8px 12px;
+
+    border-radius:
+        8px;
+
+    cursor:
+        pointer;
+}
+
+
+form {
+
+    display:
+        flex;
+
+    gap:
+        10px;
+}
+
+
+input {
+
+    flex:
+        1;
+
+    padding:
+        14px;
+
+    border:
+        1px solid #d0d5dd;
+
+    border-radius:
+        10px;
+
+    font-size:
+        16px;
+}
+
+
+form button {
+
+    padding:
+        0 22px;
+
+    border:
+        0;
+
+    border-radius:
+        10px;
+
+    cursor:
+        pointer;
+
+    background:
+        #17202a;
+
+    color:
+        white;
+}
+
+
+.status {
+
+    margin-top:
+        10px;
+
+    color:
+        #667085;
+
+    font-size:
+        13px;
+}
