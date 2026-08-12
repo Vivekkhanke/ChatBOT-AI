@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Banking AI Assistant
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+
+<style>
+:root{
+  --bg:#fff;
+  --sidebar:#f7f7f8;
+  --panel:#ffffff;
+  --text:#2f2f2f;
+  --muted:#6b6b6b;
+  --border:#e5e5e5;
+  --hover:#ececec;
+  --active:#e6e6e6;
+  --accent:#10a37f;
+  --shadow:0 1px 2px rgba(0,0,0,.04);
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:var(--text);background:var(--bg)}
+body{overflow:hidden}
+button,input{font:inherit}
+button{cursor:pointer}
+.app-shell{display:flex;width:100vw;height:100vh;background:#fff}
+
+/* ChatGPT-like left rail */
+.sidebar{
+  width:260px;min-width:260px;height:100vh;background:var(--sidebar);
+  border-right:1px solid var(--border);padding:12px 10px;
+  display:flex;flex-direction:column;gap:8px;overflow:hidden;
+}
+.brand-wrap{display:flex;align-items:center;gap:10px;padding:8px 9px 14px}
+.brand-icon{width:30px;height:30px;border-radius:9px;background:#111;color:#fff;display:grid;place-items:center}
+.brand-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.brand-name{font-size:15px;font-weight:650;letter-spacing:-.1px}
+.brand-subtitle{font-size:11px;color:var(--muted);margin-top:2px}
+
+.nav-list{display:flex;flex-direction:column;gap:2px}
+.nav-label{display:none}
+.nav-link{
+  min-height:42px;padding:9px 11px;border-radius:8px;display:flex;align-items:center;
+  gap:11px;color:#444;text-decoration:none;font-size:14px;transition:background .15s ease,transform .15s ease;
+}
+.nav-link:hover{background:var(--hover)}
+.nav-link.active{background:var(--active);color:#111;font-weight:550}
+.nav-icon{width:19px;height:19px;display:grid;place-items:center;flex:0 0 19px}
+.nav-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+.sidebar-footer{margin-top:auto;padding:8px 4px 2px;border-top:1px solid var(--border);padding-top:12px}
+.secure-status{display:flex;align-items:center;gap:9px;padding:8px 8px 10px}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#10a37f;box-shadow:0 0 0 3px rgba(16,163,127,.12)}
+.secure-title{font-size:12px;font-weight:600}.secure-caption{font-size:10px;color:var(--muted);margin-top:2px}
+.ghost-button{background:transparent;border:0;color:#555;font-size:12px;text-align:left;padding:8px;border-radius:7px}
+.ghost-button:hover{background:var(--hover)}
+.full-width{width:100%}
+
+/* Main */
+.main-content{min-width:0;flex:1;height:100vh;display:flex;flex-direction:column;background:#fff}
+.topbar{
+  height:58px;min-height:58px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;padding:0 22px;
+}
+.eyebrow{display:none}
+.topbar h1{font-size:16px;font-weight:600;margin:0;letter-spacing:-.2px}
+.topbar-actions{display:flex;gap:7px;align-items:center}
+.icon-button{
+  border:0;background:transparent;color:#555;width:34px;height:34px;border-radius:7px;
+  display:grid;place-items:center;transition:background .15s ease
+}
+.icon-button:hover{background:var(--hover)}
+.icon-button.small{width:30px;height:30px}
+.primary-button{border:1px solid #ddd;background:#fff;color:#333;border-radius:8px;padding:7px 11px;font-size:12px}
+.primary-button:hover{background:#f7f7f7}
+.compact-button{display:none}
+
+/* Hide dashboard/KPI chrome so the existing chat becomes the focal point without deleting it */
+.kpi-row{display:none}
+.workspace-layout{flex:1;min-height:0;display:flex;gap:0}
+.sessions-panel{
+  width:230px;min-width:230px;border-right:1px solid var(--border);
+  border-radius:0!important;background:#fff!important;box-shadow:none!important;
+  padding:12px 10px;overflow:auto;
+}
+.panel-header{display:flex;align-items:center;justify-content:space-between;padding:5px 7px 10px}
+.panel-title{font-size:13px;font-weight:600; color: #000000;}
+.session-list{display:flex;flex-direction:column;gap:2px}
+.session-card{
+  padding:9px 9px;border-radius:7px;border:0;background:transparent;cursor:pointer;
+  transition:background .15s ease;
+}
+.session-card:hover,.session-card.active{background:#f1f1f1}
+.session-time{font-size:10px;color:#888;margin-bottom:3px}
+.session-title{font-size:12px;font-weight:550;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.session-meta{font-size:10px;color:#888;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.quick-prompts{margin-top:18px;border-top:1px solid var(--border);padding:13px 7px 0}
+.compact-title{font-size:11px;color:#777;margin-bottom:8px}
+.quick-prompt-list{display:flex;flex-direction:column;gap:2px}
+.prompt-button{
+  display:flex;align-items:center;gap:8px;width:100%;padding:8px 6px;border:0;background:transparent;
+  color:#555;border-radius:6px;text-align:left;font-size:11px
+}
+.prompt-button:hover{background:#f1f1f1}
+.prompt-icon{width:15px;color:#888}
+
+/* Chat */
+.chat-area{
+  flex:1;min-width:0;min-height:0;display:flex;flex-direction:column;
+  border:0!important;border-radius:0!important;background:#fff!important;box-shadow:none!important;
+}
+.chat-header{
+  height:56px;min-height:56px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;padding:0 22px;
+}
+.chat-subtitle{font-size:10px;color:#888;margin-top:2px}
+.chat-actions{display:flex;align-items:center;gap:9px}
+.encryption-indicator{font-size:10px;color:#777;display:flex;align-items:center;gap:5px}
+.lock-icon{font-size:8px;color:#10a37f}
+
+.response-card{display:none}
+.chat-wrap{
+  flex:1;min-height:0;overflow:auto;padding:24px max(18px,calc((100% - 820px)/2)) 18px;
+  scroll-behavior:smooth;
+}
+.chat{width:100%;max-width:820px;margin:0 auto}
+.examples{
+  max-width:820px;width:calc(100% - 36px);margin:0 auto 9px;
+  display:flex;gap:7px;flex-wrap:wrap;
+}
+.examples button{
+  border:1px solid #e5e5e5;background:#fff;color:#555;border-radius:16px;
+  padding:7px 11px;font-size:11px;transition:all .15s ease
+}
+.examples button:hover{background:#f5f5f5;border-color:#d5d5d5}
+
+.chat-form{width:calc(100% - 36px);max-width:820px;margin:0 auto 7px}
+.input-shell{
+  min-height:48px;border:1px solid #d9d9d9;border-radius:24px;background:#fff;
+  display:flex;align-items:center;padding:5px 7px 5px 14px;
+  box-shadow:0 1px 4px rgba(0,0,0,.04);transition:border-color .15s ease,box-shadow .15s ease
+}
+.input-shell:focus-within{border-color:#bdbdbd;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.input-icon{display:none}
+.input-shell input{flex:1;border:0;outline:0;background:transparent;color:#222;font-size:14px;padding:8px}
+.input-shell input::placeholder{color:#8b8b8b}
+.input-shell button{
+  width:34px;height:34px;border:0;border-radius:50%;background:#222;color:#fff;
+  display:grid;place-items:center;font-size:14px;transition:transform .12s ease,opacity .12s ease
+}
+.input-shell button:hover{transform:scale(1.04)}
+.status{height:20px;min-height:20px;text-align:center;color:#888;font-size:10px;padding-bottom:4px}
+
+/* Generic message styling for common app.js-created chat bubbles */
+.chat > div{animation:fadeUp .18s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+.chat::-webkit-scrollbar,.sessions-panel::-webkit-scrollbar{width:7px}
+.chat::-webkit-scrollbar-thumb,.sessions-panel::-webkit-scrollbar-thumb{background:#d7d7d7;border-radius:10px}
+.chat::-webkit-scrollbar-track,.sessions-panel::-webkit-scrollbar-track{background:transparent}
+
+/* Mobile */
+@media (max-width:900px){
+  .sidebar{width:220px;min-width:220px}
+  .sessions-panel{width:190px;min-width:190px}
+}
+@media (max-width:720px){
+  .sidebar{width:62px;min-width:62px;padding:8px 6px}
+  .brand-wrap{justify-content:center;padding:8px 0 12px}
+  .brand-wrap>div:last-child,.nav-link span:last-child,.sidebar-footer{display:none}
+  .nav-link{justify-content:center;padding:10px}
+  .sessions-panel{display:none}
+  .topbar{padding:0 14px}
+  .chat-header{padding:0 14px}
+  .encryption-indicator{display:none}
+  .chat-wrap{padding-left:12px;padding-right:12px}
+  .examples,.chat-form{width:calc(100% - 18px)}
+}
+</style>
+
+
+<style>
+/* Green chat theme */
+:root{
+  --chat-green:#0d0e0d;
+  --chat-green-dark:#060606;
+  --chat-green-soft:#e0ede9;
+}
+
+/* User messages */
+.chat .user-message,
+.chat .message.user,
+.chat .user,
+.chat [class*="user"]{
+  --message-color:var(--chat-green);
+}
+
+.message.bot {
+    margin-left: auto;
+    background: var(--chat-green) !important;
+    color: #fff !important;
+    border-radius: 18px 18px 4px 18px !important;
+    border: none;
+}
+
+/* Common bubble patterns generated by app.js */
+.chat .user-message,
+.chat .message.user,
+.chat .user{
+  background:var(--chat-green)!important;
+  color:#fff!important;
+  border-radius:18px 18px 4px 18px!important;
+}
+
+/* Assistant messages */
+.chat .bot-message,
+.chat .assistant-message,
+.chat .message.assistant,
+.chat .assistant,
+.chat [class*="assistant"]{
+  --message-color:var(--chat-green);
+
+}
+
+.chat .bot-message,
+.chat .assistant-message,
+.chat .message.assistant,
+.chat .assistant{
+  background:var(--chat-green-soft)!important;
+  color:#030303!important;
+  border:1px solid #050505!important;
+  border-radius:18px 18px 18px 4px!important;
+  margin-left: 0;
+}
+
+/* Green accents inside chat */
+.chat a{color:var(--chat-green-dark)}
+.chat code{border-color:#000000}
+.status{color:var(--chat-green-dark)!important}
+
+/* ===== ADD THIS AT THE END OF YOUR CSS ===== */
+
+.chat .message,
+.chat .user-message,
+.chat .bot-message,
+.chat .assistant-message,
+.chat .message.user,
+.chat .message.bot,
+.chat .user,
+.chat .assistant {
+    width: fit-content !important;
+    max-width: 75%;
+    padding: 10px 14px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+}
+
+/* USER → RIGHT */
+.chat .user-message,
+.chat .message.user,
+.chat .user {
+    margin-left: auto !important;
+    margin-right: 0 !important;
+    background: #0d0e0d !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 18px 18px 4px 18px !important;
+}
+
+/* BOT → LEFT */
+.chat .bot-message,
+.chat .assistant-message,
+.chat .message.bot,
+.chat .message.assistant,
+.chat .assistant {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+    background: #e0ede9 !important;
+    color: #111 !important;
+    border: 1px solid #050505 !important;
+    border-radius: 18px 18px 18px 4px !important;
+}
+
+/* MOBILE */
+@media (max-width: 720px) {
+    .chat .message,
+    .chat .user-message,
+    .chat .bot-message,
+    .chat .assistant-message,
+    .chat .user,
+    .chat .assistant {
+        max-width: 88%;
+    }
+}
+
+/* Remove Recent Sessions section */
+.sessions-panel {
+    display: none !important;
+}
+
+/* Let chat use the full available width */
+.workspace-layout {
+    display: flex;
+}
+
+.chat-area {
+    flex: 1 !important;
+    width: 100% !important;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <aside class="sidebar">
+
+        <div class="brand-wrap">
+
+            <div class="brand-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 10.5 12 4l9 6.5v9H3z" />
+                    <path d="M7 20h10M8 10.5h8" />
+                </svg>
+            </div>
+
+            <div>
+
+                <div class="brand-name">
+                    Banking AI
+                </div>
+
+                <div class="brand-subtitle">
+                    Private Banking
+                </div>
+
+            </div>
+
+        </div>
+
+        <nav class="nav-list">
+
+            <div class="nav-label">
+                Workspace
+            </div>
+
+            <a class="nav-link active" href="#">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="7" height="7" rx="2" />
+                        <rect x="14" y="3" width="7" height="4" rx="1" />
+                        <rect x="14" y="10" width="7" height="11" rx="1" />
+                        <rect x="3" y="13" width="7" height="8" rx="2" />
+                    </svg>
+                </span>
+                <span>Overview</span>
+            </a>
+
+            <a class="nav-link" href="#">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M4 12h16M4 7h16M4 17h10" />
+                    </svg>
+                </span>
+                <span>Recent Chats</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+
+            <div class="secure-status">
+
+                <span class="status-dot"></span>
+
+                <div>
+
+                    <div class="secure-title">
+                        Secure
+                    </div>
+
+                    <div class="secure-caption">
+                        Banking
+                    </div>
+                
+
+                </div>
+            <button class="ghost-button full-width">
+            Vivek K
+            </button>
+            </div>
+
+            
+
+        </div>
+
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+
+                <div class="eyebrow">
+                    Banking Intelligence Console
+                </div>
+
+                <h1>
+                    Customer AI Assistant
+                </h1>
+
+            </div>
+
+            <div class="topbar-actions">
+
+
+                <button class="primary-button compact-button">
+                    Secure Session
+                </button>
+
+            </div>
+
+        </header>
+
+        <section class="kpi-row">
+
+            <article class="kpi-card highlight">
+
+                <div class="kpi-top">
+                    <span class="kpi-label">
+                        RAG Status
+                    </span>
+                    <span class="badge success">
+                        Online
+                    </span>
+                </div>
+
+                <div class="kpi-value">
+                    6 policies
+                </div>
+
+                <div class="kpi-caption">
+                    Indexed and encrypted
+                </div>
+
+            </article>
+
+            <article class="kpi-card">
+
+                <div class="kpi-top">
+                    <span class="kpi-label">
+                        Oracle Access
+                    </span>
+                    <span class="badge warning">
+                        Connected
+                    </span>
+                </div>
+
+                <div class="kpi-value">
+                    Customer Data
+                </div>
+
+                <div class="kpi-caption">
+                    Read-only SQL enabled
+                </div>
+
+            </article>
+
+            <article class="kpi-card">
+
+                <div class="kpi-top">
+                    <span class="kpi-label">
+                        Risk Layer
+                    </span>
+                    <span class="badge ok">
+                        Standard
+                    </span>
+                </div>
+
+                <div class="kpi-value">
+                    Low Risk
+                </div>
+
+                <div class="kpi-caption">
+                    Zero data exposure
+                </div>
+
+            </article>
+
+        </section>
+
+        <section class="workspace-layout">
+
+            <aside class="sessions-panel glass-panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <span class="panel-title">
+                            Recent sessions
+                        </span>
+                    </div>
+
+                    <button class="icon-button small">
+                        <span aria-hidden="true">+</span>
+                    </button>
+
+                </div>
+
+                <div class="session-list">
+
+                    <article class="session-card active">
+
+                        <div class="session-time">
+                            10:24 AM
+                        </div>
+
+                        <div class="session-title">
+                            Account query
+                        </div>
+
+                        <div class="session-meta">
+                            Customer Account #42981
+                        </div>
+
+                    </article>
+
+                    <article class="session-card">
+
+                        <div class="session-time">
+                            09:58 AM
+                        </div>
+
+                        <div class="session-title">
+                            Credit card policy
+                        </div>
+
+                        <div class="session-meta">
+                            Policy retrieval
+                        </div>
+
+                    </article>
+
+                    <article class="session-card">
+
+                        <div class="session-time">
+                            09:14 AM
+                        </div>
+
+                        <div class="session-title">
+                            Savings balance
+                        </div>
+
+                        <div class="session-meta">
+                            Account balance check
+                        </div>
+
+                    </article>
+
+                </div>
+
+                <div class="quick-prompts">
+
+                    <div class="panel-title compact-title">
+                        Quick prompts
+                    </div>
+
+                    <div class="quick-prompt-list">
+
+                        <button class="prompt-button" onclick="useExample('Show my account details')">
+                            <span class="prompt-icon">↗</span>
+                            <span>My account overview</span>
+                        </button>
+
+                        <button class="prompt-button" onclick="useExample('What is my savings balance?')">
+                            <span class="prompt-icon">↘</span>
+                            <span>Balance summary</span>
+                        </button>
+
+                        <button class="prompt-button" onclick="useExample('What is the bank deposit policy?')">
+                            <span class="prompt-icon">✓</span>
+                            <span>Deposit policy</span>
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </aside>
+
+            <section class="chat-area glass-panel">
+
+                <div class="chat-header">
+
+                    <div>
+
+                        <div class="panel-title">
+                            Secure Conversation
+                        </div>
+
+                        <div class="chat-subtitle">
+                            Banking Assistant • AI
+                        </div>
+
+                    </div>
+
+                    <div class="chat-actions">
+
+                        <span class="encryption-indicator">
+                            <span class="lock-icon">●</span>
+                            Encrypted
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="response-card">
+
+                    <div class="response-card-header">
+
+                        <div>
+
+                            <span class="badge outline">
+                                Gemini Response
+                            </span>
+
+                            <div class="response-title">
+                                Banking Intelligence Summary
+                            </div>
+
+                        </div>
+
+                        <span class="source-badge">
+                            <span class="badge-dot"></span>
+                            Oracle + RAG
+                        </span>
+
+                    </div>
+
+                    <div class="response-card-body">
+
+                        <div class="source-badges">
+
+                            <span class="badge success">
+                                RAG Secure
+                            </span>
+
+                            <span class="badge outline">
+                                Source: Policy Docs
+                            </span>
+
+                            <span class="badge outline">
+                                Context: 2 matched
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <section class="chat-wrap">
+
+                    <div
+                        id="chat"
+                        class="chat"
+                    ></div>
+
+                </section>
+
+                <div class="examples">
+
+                    <button
+                        onclick="useExample('My account details please')"
+                    >
+                        Account Details
+                    </button>
+
+                    <button
+                        onclick="useExample('What is my savings balance?')"
+                    >
+                        Savings Balance
+                    </button>
+
+                    <button
+                        onclick="useExample('What is my credit score?')"
+                    >
+                        Credit Score
+                    </button>
+
+                    <button
+                        onclick="useExample('What is the bank deposit policy?')"
+                    >
+                        Deposit Policy
+                    </button>
+
+                    <button
+                        onclick="useExample('What does the credit card policy say?')"
+                    >
+                        Credit Card Policy
+                    </button>
+
+                </div>
+
+                <form id="chatForm" class="chat-form">
+
+                    <label class="input-shell">
+
+                        <span class="input-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Z" />
+                                <path d="M8 14h8M9 10h6" />
+                            </svg>
+                        </span>
+
+                        <input
+                            id="message"
+                            type="text"
+                            placeholder="Ask your banking question..."
+                            autocomplete="off"
+                            required
+                        >
+
+                        <button type="submit">
+                            <span aria-hidden="true">➤</span>
+                        </button>
+
+                    </label>
+
+                </form>
+
+                <div
+                    id="status"
+                    class="status"
+                ></div>
+
+            </section>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script
+    src="{{ url_for('static', filename='app.js') }}"
+></script>
+
+</body>
+
+</html>
