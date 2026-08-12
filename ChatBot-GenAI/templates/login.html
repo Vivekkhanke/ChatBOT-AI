@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banking AI Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+/* ==========================================================================
+   Banking AI — Login
+   Palette: warm paper background, dark sage header, black ink accents,
+   muted gold for the "Private Banking" register.
+   ========================================================================== */
+
+:root {
+  --color-bg: #f7f4ee;
+  --color-bg-grain: #f2eee4;
+  --color-surface: #ffffff;
+  --color-ink: #1d201c;
+  --color-ink-soft: #5c6058;
+  --color-border: #e6e1d3;
+  --color-border-soft: #efece1;
+
+  --color-sage-900: #3d493f;
+  --color-sage-700: #4c5a4d;
+  --color-sage-500: #6c7c6b;
+
+  --color-gold: #9c8140;
+  --color-gold-soft: #b39c5f;
+
+  --color-danger-bg: #fbeceb;
+  --color-danger-border: #e7c9c6;
+  --color-danger-ink: #8a3b32;
+
+  --font-display: "Newsreader", Georgia, serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --radius-lg: 20px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+
+  --shadow-card: 0 1px 2px rgba(29, 32, 28, 0.04), 0 24px 48px -20px rgba(29, 32, 28, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body.login-page {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 15% 0%, var(--color-bg-grain), transparent 45%),
+    radial-gradient(circle at 85% 100%, var(--color-bg-grain), transparent 45%),
+    var(--color-bg);
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- top status bar ---------- */
+
+.login-topbar {
+  width: 100%;
+  background: linear-gradient(100deg, var(--color-sage-900), var(--color-sage-500));
+}
+
+.login-topbar-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #f2f1ea;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.login-topbar-dot {
+  width: 7px;
+  height: 7px;
+  margin-right: 2px;
+  border-radius: 50%;
+  background: #8fd9a8;
+  box-shadow: 0 0 0 3px rgba(143, 217, 168, 0.25);
+  flex-shrink: 0;
+}
+
+/* ---------- layout ---------- */
+
+.login-simple {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px 64px;
+}
+
+/* ---------- card ---------- */
+
+.login-card.glass-panel {
+  width: 100%;
+  max-width: 400px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 36px 32px 28px;
+}
+
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.brand-icon {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background: var(--color-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-icon svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: #f7f4ee;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.brand-name {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--color-ink);
+}
+
+.brand-subtitle {
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+}
+
+.login-copy-block {
+  margin-bottom: 22px;
+}
+
+.login-copy-block h1 {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 27px;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.login-copy-block p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-ink-soft);
+}
+
+/* ---------- alert ---------- */
+
+.login-alert {
+  margin-bottom: 18px;
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
+  color: var(--color-danger-ink);
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+
+/* ---------- form ---------- */
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.login-field span {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+}
+
+.login-field input {
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  color: var(--color-ink);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.login-field input::placeholder {
+  color: #a9a89c;
+}
+
+.login-field input:hover {
+  border-color: #d3cdb9;
+}
+
+.login-field input:focus-visible {
+  border-color: var(--color-sage-700);
+  box-shadow: 0 0 0 3px rgba(76, 90, 77, 0.16);
+}
+
+.login-button {
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: 999px;
+  background: var(--color-ink);
+  color: #f7f4ee;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  font-weight: 600;
+  padding: 13px 20px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.login-button:hover {
+  background: #2c2f29;
+}
+
+.login-button:active {
+  transform: translateY(1px);
+}
+
+.login-button:focus-visible {
+  outline: 2px solid var(--color-sage-700);
+  outline-offset: 2px;
+}
+
+.login-button.full-width {
+  width: 100%;
+}
+
+.login-button-icon {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- security strip ---------- */
+
+.login-security-strip {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border-soft);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-ink-soft);
+}
+
+.login-security-dot {
+  width: 7px;
+  height: 7px;
+  margin-right: 2px;
+  border-radius: 50%;
+  background: #4caf6f;
+  box-shadow: 0 0 0 3px rgba(76, 175, 111, 0.18);
+  flex-shrink: 0;
+}
+
+/* ---------- footnote ---------- */
+
+.login-footnote {
+  margin-top: 14px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: #9a9789;
+}
+
+.login-below-card {
+  margin: 18px 0 0;
+  font-size: 12px;
+  color: var(--color-ink-soft);
+  text-align: center;
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 480px) {
+  .login-card.glass-panel {
+    padding: 28px 22px 22px;
+    border-radius: 16px;
+  }
+
+  .login-copy-block h1 {
+    font-size: 24px;
+  }
+}
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+
+    </style>
+</head>
+
+<body class="login-page">
+
+    <div class="login-topbar">
+        <div class="login-topbar-inner">
+            <span class="login-topbar-dot" aria-hidden="true"></span>
+            <span>Customer AI Assistant &mdash; Secure Access</span>
+        </div>
+    </div>
+
+    <main class="login-simple">
+        <section class="login-card glass-panel">
+
+            <div class="login-brand">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M3 10.5 12 4l9 6.5v9H3z"></path>
+                        <path d="M7 20h10M8 10.5h8"></path>
+                    </svg>
+                </div>
+
+                <div>
+                    <div class="brand-name">Banking AI</div>
+                    <div class="brand-subtitle">Private Banking</div>
+                </div>
+            </div>
+
+            <div class="login-copy-block">
+                <h1>Sign in</h1>
+                <p>Access the secure banking assistant.</p>
+            </div>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="login-alert" role="alert">{{ messages[-1] }}</div>
+                {% endif %}
+            {% endwith %}
+
+            <form class="login-form" method="post" action="{{ url_for('login') }}">
+                <label class="login-field">
+                    <span>Email</span>
+                    <input
+                        type="email"
+                        name="username"
+                        placeholder="name@bank.com"
+                        autocomplete="username"
+                        required
+                    >
+                </label>
+
+                <label class="login-field">
+                    <span>Password</span>
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required
+                    >
+                </label>
+
+                <button type="submit" class="login-button full-width">
+                    Login
+                    <svg class="login-button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M5 12h13M13 6l6 6-6 6"></path>
+                    </svg>
+                </button>
+            </form>
+
+            <div class="login-security-strip">
+            </div>
+
+        
+        </section>
+
+        <p class="login-below-card">Banking Assistant &middot; AI</p>
+    </main>
+
+</body>
+
+</html>

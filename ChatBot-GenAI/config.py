@@ -105,6 +105,12 @@ FLASK_DEBUG = os.getenv(
 ).lower() == "true"
 
 
+FLASK_SECRET_KEY = os.getenv(
+    "FLASK_SECRET_KEY",
+    "dev-only-change-me"
+)
+
+
 # ============================================================
 # VALIDATION
 # ============================================================

@@ -1,10 +1,15 @@
 import uuid
+from functools import wraps
 
 from flask import (
     Flask,
     jsonify,
+    redirect,
     render_template,
-    request
+    request,
+    session,
+    flash,
+    url_for
 )
 
 import config
@@ -21,6 +26,7 @@ from db import test_connection
 app = Flask(
     __name__
 )
+app.secret_key = config.FLASK_SECRET_KEY
 
 
 # ============================================================
@@ -37,6 +43,77 @@ config.validate_config()
 chatbot = BankingChatbot()
 
 
+def login_required(view):
+
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+
+        if session.get("logged_in"):
+            return view(*args, **kwargs)
+
+        if request.endpoint in {"chat", "rebuild_index"}:
+            return jsonify({
+                "success": False,
+                "error": "Login required"
+            }), 401
+
+        return redirect(url_for("login"))
+
+    return wrapped
+
+
+# ============================================================
+# Login
+# ============================================================
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+
+    if request.method == "POST":
+
+        username = str(
+            request.form.get("username", "")
+        ).strip()
+
+        password = str(
+            request.form.get("password", "")
+        ).strip()
+
+        if not username or not password:
+            flash("Enter both email and password to continue.")
+
+        else:
+            session["logged_in"] = True
+            session["display_name"] = (
+                username.split("@", 1)[0]
+                .replace(".", " ")
+                .replace("_", " ")
+                .title()
+            )
+
+            return redirect(
+                url_for("dashboard")
+            )
+
+    return render_template(
+        "login.html"
+    )
+
+
+# ============================================================
+# Logout
+# ============================================================
+
+@app.get("/logout")
+def logout():
+
+    session.clear()
+
+    return redirect(
+        url_for("login")
+    )
+
+
 # ============================================================
 # Home
 # ============================================================
@@ -45,7 +122,26 @@ chatbot = BankingChatbot()
 def home():
 
     return render_template(
-        "index.html"
+        "login.html"
+    )
+
+
+# ============================================================
+# Dashboard
+# ============================================================
+
+@app.get("/dashboard")
+@login_required
+def dashboard():
+
+    return render_template(
+        "index.html",
+        display_name=(
+            session.get(
+                "display_name",
+                "Vivek K"
+            )
+        )
     )
 
 
@@ -59,7 +155,6 @@ def health():
     oracle_status = "connected"
 
     try:
-
         test_connection()
 
     except Exception as exc:
@@ -79,12 +174,12 @@ def health():
         )
     })
 
-
 # ============================================================
 # Chat
 # ============================================================
 
 @app.post("/chat")
+@login_required
 def chat():
 
     data = (
@@ -147,6 +242,7 @@ def chat():
 # ============================================================
 
 @app.post("/rebuild-index")
+@login_required
 def rebuild_index():
 
     try:
